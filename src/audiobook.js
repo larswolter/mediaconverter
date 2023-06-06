@@ -65,7 +65,7 @@ title=${basename(file, 'mp3')}
       continue;
     }
     // create filelist
-    writeFileSync('audiobookFileList.txt', chapters.map((f) => `file '${f}'`).join('\n'));
+    writeFileSync('audiobookFileList.txt', chapters.map((f) => `file '${f.replace(/'/g,'\'\\\'\'')}'`).join('\n'));
     progress.remove(encodingBar);
 
     encodingBar = progress.create(
