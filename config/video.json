@@ -1,0 +1,8 @@
+{
+    "vCodec":["hevc","h264"],
+    "fps":"24-60",
+    "aCodec":"aac",
+    "resolution":"500-1080",
+    "vBitrateResolution":"0.5-1.5",
+    "aBitrate":"56-192"
+}

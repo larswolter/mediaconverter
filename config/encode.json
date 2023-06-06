@@ -1,0 +1,8 @@
+{
+    "vCodec":"hevc",
+    "aCodec":"aac",
+    "resolution":"720",
+    "vBitrate": "900k",
+    "aBitrate":"96k",
+    "preset":"fast"
+}

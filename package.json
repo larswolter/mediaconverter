@@ -1,0 +1,47 @@
+{
+  "name": "mediacoverter",
+  "version": "1.0.0",
+  "description": "Goes thru a directory tree and transcodes various media files",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "npx babel src --out-dir dist",
+    "start": "npx babel src --out-dir dist && node dist/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=18.10.0",
+    "npm": ">=9.3.0"
+  },
+  "author": "Lars Wolter",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
+    "cli-progress": "^3.11.2",
+    "commander": "^10.0.0",
+    "html-webpack-plugin": "^5.5.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.20.7",
+    "@babel/core": "^7.20.12",
+    "@babel/node": "latest",
+    "@babel/plugin-proposal-class-properties": "latest",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-react": "latest",
+    "@emotion/cache": "latest",
+    "@emotion/react": "latest",
+    "@emotion/server": "latest",
+    "@emotion/styled": "latest",
+    "@mui/material": "latest",
+    "@types/node": "^18.13.0",
+    "babel-loader": "latest",
+    "cross-env": "latest",
+    "eslint": "^8.32.0",
+    "express": "^4.18.2",
+    "nodemon": "latest",
+    "npm-run-all": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "webpack": "latest",
+    "webpack-cli": "latest"
+  }
+}
