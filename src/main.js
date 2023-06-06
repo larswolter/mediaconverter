@@ -92,17 +92,23 @@ program
   .description('analyze a directory tree with mp3 audiobooks and convert them to m4b')
   .argument('<mp3folder>', 'folder containing mp3s or a folder with subfolders containing mp3s')
   .argument('<targetFolder>', 'output folder where the .m4b should be put in')
-  .action(async (mp3folder, targetFolder) => {
+  .option(
+    '-e, --encode-config <json>',
+    'path to encode json file',
+    nodePath.join(__dirname, '..', 'config', 'encode.json')
+  )
+  .action(async (mp3folder, targetFolder, options) => {
     const pathToAnalyze = nodePath.resolve(relativeDir, mp3folder);
     const targetPath = nodePath.resolve(relativeDir, targetFolder);
+    const encodeJson = JSON.parse(readFileSync(nodePath.resolve(relativeDir, options['encodeConfig'])));
     try {
       accessSync(targetPath, constants.R_OK | constants.W_OK | constants.X_OK);
     } catch (err) {
       console.error(`Cannot access targetFolder ${targetPath}`);
       exit(1);
     }
-    console.log('Running Audiobook:', { pathToAnalyze, targetPath });
-    await audiobook({ path: pathToAnalyze, targetFolder: targetPath });
+    console.log('Running Audiobook:', { pathToAnalyze, targetPath, bitrate: encodeJson.aBitrate });
+    await audiobook({ path: pathToAnalyze, targetFolder: targetPath, encode: encodeJson });
   });
 
 program.parse();

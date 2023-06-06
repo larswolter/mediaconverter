@@ -10,3 +10,26 @@ This can be used for different things:
 
 ## Missing stuff
 currently only reencodes with new bitrate, does not change resolution
+
+## Usage
+
+Requires Node (18) and ffmpeg installed. After checking out the repo 
+
+```shell
+npm install
+```
+
+analyze videos, grouping them together to show resolutions and bitrates
+```shell
+npm start -- analyze /home/user/Videos
+```
+
+convert vieos that dont match the `config/videos.json` template
+```shell
+npm start -- copy /home/user/Videos ./convertedVideos
+```
+
+convert some mp3 folder audiobooks to .m4b audiobooks
+```shell
+npm start -- audiobook /home/user/Audiobooks ./convertedBooks
+```

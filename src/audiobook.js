@@ -4,7 +4,7 @@ import { exec } from 'child_process';
 import { Presets, MultiBar } from 'cli-progress';
 import { collectFiles, collectFolders, fileDuration, fileSize, getProgress } from './helpers';
 
-const audiobook = async ({ path, targetFolder }) => {
+const audiobook = async ({ path, targetFolder, encode }) => {
   console.log('collecting files...');
   const folders = collectFolders({ path, recursive: true });
   const progress = new MultiBar(
@@ -81,7 +81,9 @@ title=${basename(file, 'mp3')}
     try {
       await new Promise((resolve, reject) => {
         exec(
-          'ffmpeg -f concat -safe 0 -i audiobookFileList.txt -b:a 64k -c:a aac -nostats -progress ffmpeg.progress "audiobookConcatenated.m4a"',
+          `ffmpeg -f concat -safe 0 -i audiobookFileList.txt -b:a ${
+            encode.aBitrate || '128k'
+          } -c:a aac -nostats -progress ffmpeg.progress "audiobookConcatenated.m4a"`,
           (error) => {
             if (error) reject(error);
             resolve();
