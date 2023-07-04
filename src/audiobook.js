@@ -53,7 +53,13 @@ title=${basename(file, 'mp3')}
 `
         );
         sourceDuration += duration;
-      } else if (file.toLowerCase().endsWith('.jpg') || file.toLowerCase().endsWith('.png')) cover = file;
+      } else if (
+        file.toLowerCase().endsWith('.jpg') ||
+        file.toLowerCase().endsWith('.jpeg') ||
+        file.toLowerCase().endsWith('.png')
+      ) {
+        cover = file;
+      }
       encodingBar.increment();
     }
     const targetFilename = join(targetFolder, basename(folder)) + '.m4b';
@@ -65,7 +71,7 @@ title=${basename(file, 'mp3')}
       continue;
     }
     // create filelist
-    writeFileSync('audiobookFileList.txt', chapters.map((f) => `file '${f.replace(/'/g,'\'\\\'\'')}'`).join('\n'));
+    writeFileSync('audiobookFileList.txt', chapters.map((f) => `file '${f.replace(/'/g, "'\\''")}'`).join('\n'));
     progress.remove(encodingBar);
 
     encodingBar = progress.create(
