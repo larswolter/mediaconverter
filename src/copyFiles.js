@@ -3,6 +3,7 @@ import { Presets, MultiBar } from 'cli-progress';
 import { unlinkSync } from 'fs';
 import { join } from 'path';
 import { fileDuration, fileSize, getProgress } from './helpers';
+import { logger } from './logger';
 
 const copyFiles = async ({ files, conversion, sourceFolder, targetFolder, encode }) => {
   const progress = new MultiBar(
@@ -59,7 +60,7 @@ const copyFiles = async ({ files, conversion, sourceFolder, targetFolder, encode
           );
         });
       } catch (err) {
-        console.log(`Error transociding ${filename}\n`, err);
+        logger.info(`Error transociding ${filename}\n`, err);
       }
       clearInterval(prober);
       progress.remove(encodingBar);
@@ -82,10 +83,13 @@ const copyFiles = async ({ files, conversion, sourceFolder, targetFolder, encode
         encodingBar.update(targetDuration, { pass });
       }, 2000);
       try {
-        // default copy streams 1,2,3 and only map 0
-        let vParams = '-map 0 -codec:v:1 copy -codec:v:2 copy -codec:v:3 copy';
+        // default reencode first video and first audio
+        let vParams = '-map 0:v:0 -map 0:a:0';
+        if(conversion.includes('picture'))
+          vParams += ' -map 0:v:1 -codec:v:1 copy'
         let aParams = '-c:a copy';
         let precode = '';
+
         if (encode.preset) {
           vParams += ` -preset ${encode.preset}`;
         }
@@ -112,19 +116,18 @@ const copyFiles = async ({ files, conversion, sourceFolder, targetFolder, encode
               resolve();
             });
           });
-          pass = 'enc';
-          await new Promise((resolve, reject) => {
-            exec(
-              `ffmpeg -loglevel error -nostats -progress ffmpeg.progress -i "${filename}" ${vParams} ${aParams} "${targetFilename}" `,
-              (error) => {
-                if (error) reject(error);
-                resolve();
-              }
-            );
-          });
         }
+        pass = 'enc';
+        const command = `ffmpeg -loglevel error -nostats -progress ffmpeg.progress -i "${filename}" ${vParams} ${aParams} "${targetFilename}" -y `;
+        logger.debug(`Executing: ${command}`)
+        await new Promise((resolve, reject) => {
+          exec(command, (error) => {
+            if (error) reject(error);
+            resolve();
+          });
+        });
       } catch (err) {
-        console.log(`Error transcoding ${filename}\n`, err);
+        logger.info(`Error transcoding ${filename}\n`, err);
         throw err;
       }
       clearInterval(prober);

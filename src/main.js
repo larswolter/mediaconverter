@@ -5,6 +5,7 @@ import copyFiles from './copyFiles';
 import audiobook from './audiobook';
 import nodePath from 'path';
 import { exit } from 'process';
+import { logger } from './logger';
 
 const workingDir = nodePath.join(__dirname, '..', 'work');
 const relativeDir = process.cwd();
@@ -18,10 +19,10 @@ try {
 try {
   process.chdir(workingDir);
 } catch (err) {
-  console.error(`could not switch to working directory "${workingDir}"`);
+  logger.error(`could not switch to working directory "${workingDir}"`);
   exit(1);
 }
-console.error(`Using working directory "${workingDir}"`);
+logger.info(`Using working directory "${workingDir}"`);
 
 const program = new Command();
 
@@ -43,9 +44,9 @@ program
     const format = options['format'];
     const compare = options['compare'] && JSON.parse(readFileSync(nodePath.resolve(relativeDir, options['compare'])));
     const pathToAnalyze = nodePath.resolve(relativeDir, path);
-    console.log('Running Analyze:', { recursive, format, compare, pathToAnalyze });
+    logger.info('Running Analyze:', { recursive, format, compare, pathToAnalyze });
     const res = await analyze({ path: pathToAnalyze, format, recursive, compare });
-    console.log(res);
+    logger.info(res);
   });
 program
   .command('copy')
@@ -72,10 +73,10 @@ program
     try {
       accessSync(targetPath, constants.R_OK | constants.W_OK | constants.X_OK);
     } catch (err) {
-      console.error(`Cannot access targetFolder ${targetPath}`);
+      logger.error(`Cannot access targetFolder ${targetPath}`);
       exit(1);
     }
-    console.log('Running Copy:', { recursive, compareJson, encodeJson, pathToAnalyze, targetPath });
+    logger.info('Running Copy:', { recursive, compareJson, encodeJson, pathToAnalyze, targetPath });
     const res = await analyze({ path: pathToAnalyze, format: 'files', recursive, compare: compareJson });
     for (const key of Object.keys(res)) {
       await copyFiles({
@@ -104,10 +105,10 @@ program
     try {
       accessSync(targetPath, constants.R_OK | constants.W_OK | constants.X_OK);
     } catch (err) {
-      console.error(`Cannot access targetFolder ${targetPath}`);
+      logger.error(`Cannot access targetFolder ${targetPath}`);
       exit(1);
     }
-    console.log('Running Audiobook:', { pathToAnalyze, targetPath, bitrate: encodeJson.aBitrate });
+    logger.info('Running Audiobook:', { pathToAnalyze, targetPath, bitrate: encodeJson.aBitrate });
     await audiobook({ path: pathToAnalyze, targetFolder: targetPath, encode: encodeJson });
   });
 

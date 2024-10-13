@@ -3,9 +3,10 @@ import { basename, join } from 'path';
 import { exec } from 'child_process';
 import { Presets, MultiBar } from 'cli-progress';
 import { collectFiles, collectFolders, fileDuration, fileSize, getProgress } from './helpers';
+import { logger } from './logger';
 
 const audiobook = async ({ path, targetFolder, encode }) => {
-  console.log('collecting files...');
+  logger.info('collecting files...');
   const folders = collectFolders({ path, recursive: true });
   const progress = new MultiBar(
     {
@@ -89,7 +90,7 @@ title=${basename(file, 'mp3')}
         exec(
           `ffmpeg -f concat -safe 0 -i audiobookFileList.txt -b:a ${
             encode.aBitrate || '128k'
-          } -c:a aac -nostats -progress ffmpeg.progress "audiobookConcatenated.m4a"`,
+          } -c:a aac -vn -nostats -progress ffmpeg.progress "audiobookConcatenated.m4a"`,
           (error) => {
             if (error) reject(error);
             resolve();
@@ -114,7 +115,7 @@ title=${basename(file, 'mp3')}
       unlinkSync('audiobookConcatenated.m4a');
       renameSync('audiobookFinal.m4a', targetFilename);
     } catch (err) {
-      console.log(err);
+      logger.info(err);
     }
     clearInterval(prober);
     progress.remove(encodingBar);

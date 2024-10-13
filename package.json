@@ -18,7 +18,9 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
     "cli-progress": "^3.11.2",
     "commander": "^10.0.0",
-    "html-webpack-plugin": "^5.5.0"
+    "html-webpack-plugin": "^5.5.0",
+    "pino": "^8.16.1",
+    "pino-pretty": "^10.2.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.20.7",

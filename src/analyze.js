@@ -1,13 +1,14 @@
 import { exec } from 'child_process';
 import { SingleBar, Presets } from 'cli-progress';
 import { collectFiles } from './helpers';
+import { logger } from './logger';
 
 const categories = {};
 
 const analyze = async ({ path, format, recursive, compare }) => {
-  console.log('collecting files...');
+  logger.info('collecting files...');
   const files = collectFiles({ path, recursive });
-  console.log(`${files.length} collected`);
+  logger.info(`${files.length} collected`);
   const progress = new SingleBar(
     {
       format: `${compare ? 'Comparing' : 'Analyzing'} {bar} {value}/{total} files`,
@@ -21,7 +22,7 @@ const analyze = async ({ path, format, recursive, compare }) => {
         exec(
           `ffprobe -v quiet -print_format json -show_format -show_streams -show_error "${filename}" `,
           (error, stdout) => {
-            // console.log(result.join('\n'));
+            // logger.info(result.join('\n'));
             resolve(JSON.parse(stdout));
           }
         );
@@ -33,6 +34,7 @@ const analyze = async ({ path, format, recursive, compare }) => {
         const audio = probe.streams.find(
           (s) => s.codec_type === 'audio' && (s.disposition.default || probe.streams.length === 1)
         );
+        //        logger.info(probe);
         // const preview = probe.streams.find((s) => s.codec_type === 'video' && s.disposition.attached_pic);
         const classification = {
           format:
@@ -42,10 +44,13 @@ const analyze = async ({ path, format, recursive, compare }) => {
                 vCodec: video.codec_name,
                 resolution: Number(video.height),
                 fps: Math.round(Number(video.r_frame_rate.split('/')[0]) / Number(video.r_frame_rate.split('/')[1])),
-                vBitrate: Number((Math.round(Number(video.bit_rate) * 0.00001) * 0.1).toFixed(1)),
+                vBitrate: Number(
+                  (Math.round(Number(video.bit_rate || probe.format.bit_rate) * 0.00001) * 0.1).toFixed(1)
+                ),
                 vBitrateResolution:
-                  Number(((Number(video.bit_rate) * 0.001) / Number(video.height)).toFixed(1)) *
-                  (video.codec_name === 'hevc' ? 0.8 : 1.0),
+                  Number(
+                    ((Number(video.bit_rate || probe.format.bit_rate) * 0.001) / Number(video.height)).toFixed(1)
+                  ) * (video.codec_name === 'hevc' ? 0.8 : 1.0),
               }
             : { vCodec: 'v' }),
           ...(audio
@@ -57,6 +62,10 @@ const analyze = async ({ path, format, recursive, compare }) => {
               }
             : { aCodec: 'a' }),
         };
+        const picture = probe.streams.find(
+          (s) => s.codec_type === 'video' && s.codec_name && s.disposition.attached_pic
+        );
+        if (picture) classification.picture = 'picture';
         let diffing =
           compare &&
           Object.keys(compare).filter((key) => {

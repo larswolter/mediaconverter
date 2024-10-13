@@ -56,7 +56,7 @@ export const fileSize = async (filename) => {
 export const getProgress = async () => {
   const probe = await new Promise((resolve) => {
     exec('tail -n 15 ffmpeg.progress', (error, stdout) => {
-      // console.log(result.join('\n'));
+      // logger.info(result.join('\n'));
       const progress = {};
       stdout.split('\n').forEach((line) => {
         const [key, value] = line.split('=');
@@ -75,7 +75,7 @@ export const getProgress = async () => {
 export const fileDuration = async (filename) => {
   const probe = await new Promise((resolve) => {
     exec(`ffprobe -v quiet -print_format json -show_format "${filename}" `, (error, stdout) => {
-      // console.log(result.join('\n'));
+      // logger.info(result.join('\n'));
       resolve(JSON.parse(stdout));
     });
   });

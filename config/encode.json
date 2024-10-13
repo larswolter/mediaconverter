@@ -2,7 +2,7 @@
     "vCodec":"hevc",
     "aCodec":"aac",
     "resolution":"720",
-    "vBitrate": "900k",
+    "vQuality": "28",
     "aBitrate":"128k",
     "preset":"fast"
 }
